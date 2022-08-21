@@ -1,3 +1,5 @@
+use crate::utils::parse_field;
+
 /// Generate django model code.
 pub fn generate_model_code(name: &str, fields: &Vec<String>) -> String {
     let mut content = String::new();
@@ -15,12 +17,13 @@ pub fn generate_model_code(name: &str, fields: &Vec<String>) -> String {
     content.push_str("    created_at = models.DateTimeField(editable=False, auto_add=True)\n");
     content.push_str("    updated_at = models.DateTimeField(editable=False, auto_add_now=True)\n");
     for value in fields.iter() {
-        let (fieldname, fieldtype) = parse_field(value);
-        content.push_str("    ");
-        content.push_str(fieldname);
-        content.push_str(" = ");
-        content.push_str(generate_field_code(fieldtype));
-        content.push_str("\n");
+        if let Ok((fieldname, fieldtype)) = parse_field(value) {
+            content.push_str("    ");
+            content.push_str(fieldname);
+            content.push_str(" = ");
+            content.push_str(generate_field_code(fieldtype));
+            content.push_str("\n");
+        };
     }
     content.push_str("\n");
     content
@@ -33,23 +36,5 @@ fn generate_field_code(fieldtype: &str) -> &str {
         "string" => "models.CharField(max_length=200)",
         "json" => "models.JSONField()",
         fieldtype => panic!("not support field type: {}", fieldtype),
-    }
-}
-
-// Returns field name and type.
-fn parse_field(field: &str) -> (&str, &str) {
-    let v: Vec<&str> = field.split(":").collect();
-    (v[0], v[1])
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_parse_field() {
-        let (fieldname, fieldtype) = parse_field("name:string");
-        assert_eq!("name", fieldname);
-        assert_eq!("string", fieldtype);
     }
 }
