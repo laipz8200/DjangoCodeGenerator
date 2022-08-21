@@ -35,7 +35,6 @@ impl<'a> Generator<'a> {
     ///     \"\"\"
     ///     name = serializers.CharField()
     ///     is_active = serializers.BooleanField()
-    ///
     /// ")));
     /// ```
     pub fn generate_serializer_code(
@@ -43,30 +42,25 @@ impl<'a> Generator<'a> {
         name: &str,
         fields: &Vec<String>,
     ) -> Result<String, String> {
-        let mut content = String::new();
-        // class name
-        content.push_str("\nclass ");
-        content.push_str(&convert_name(name)?);
-        content.push_str("Serializer(serializers.Serializer):\n");
-        content.push_str("    \"\"\"");
-        content.push_str(&convert_name(name)?);
-        content.push_str(" serializer\n\n");
-        content.push_str("    auto generated code.\n");
-        content.push_str("    \"\"\"\n");
-        // fields
-        for value in fields.iter() {
-            if let Ok((fieldname, fieldtype)) = parse_field(value) {
+        let name = convert_name(name)?;
+        let mut content = format!(
+            "
+class {name}Serializer(serializers.Serializer):
+    \"\"\"{name} serializer
+
+    auto generated code.
+    \"\"\"
+"
+        )
+        .to_owned();
+        for field in fields.iter() {
+            if let Ok((fieldname, fieldtype)) = parse_field(field) {
                 if let Some(code) = self.code_map.get(fieldtype) {
-                    content.push_str("    ");
-                    content.push_str(fieldname);
-                    content.push_str(" = ");
-                    content.push_str(code);
-                    content.push_str("\n");
+                    content += format!("    {fieldname} = {code}\n").as_str();
                 }
             };
         }
-        content.push_str("\n");
-        Ok(content)
+        Ok(String::from(content))
     }
     /// Generate DRF ModelSerializer code.
     ///
@@ -88,8 +82,7 @@ impl<'a> Generator<'a> {
     ///     \"\"\"
     ///     class Meta:
     ///         model = NormalUser
-    ///         fields = ('name', 'is_active', 'id', 'created_at', 'updated_at',)
-    ///
+    ///         fields = ('name', 'is_active', 'id', 'created_at', 'updated_at')
     /// ")));
     /// ```
     pub fn generate_model_serializer_code(
@@ -97,31 +90,28 @@ impl<'a> Generator<'a> {
         name: &str,
         fields: &Vec<String>,
     ) -> Result<String, String> {
-        let mut content = String::new();
-        // class name
-        content.push_str("\nclass ");
-        content.push_str(&convert_name(name)?);
-        content.push_str("ModelSerializer(serializers.ModelSerializer):\n");
-        content.push_str("    \"\"\"");
-        content.push_str(&convert_name(name)?);
-        content.push_str(" model serializer\n\n");
-        content.push_str("    auto generated code.\n");
-        content.push_str("    \"\"\"\n");
-        content.push_str("    class Meta:\n");
-        content.push_str("        model = ");
-        content.push_str(&convert_name(name)?);
-        content.push_str("\n");
-        content.push_str("        fields = (");
-        // fields
-        for value in fields.iter() {
-            if let Ok((fieldname, _)) = parse_field(value) {
-                content.push_str("'");
-                content.push_str(fieldname);
-                content.push_str("', ");
-            };
+        let name = convert_name(name)?;
+        let mut v = vec![];
+        for field in fields {
+            let (fieldname, _) = parse_field(field)?;
+            v.push(format!("'{fieldname}'"));
         }
-        content.push_str("'id', 'created_at', 'updated_at',)\n");
-        content.push_str("\n");
+        v.push(String::from("'id'"));
+        v.push(String::from("'created_at'"));
+        v.push(String::from("'updated_at'"));
+        let fields = v.join(", ");
+        let content = format!(
+            "
+class {name}ModelSerializer(serializers.ModelSerializer):
+    \"\"\"{name} model serializer
+
+    auto generated code.
+    \"\"\"
+    class Meta:
+        model = {name}
+        fields = ({fields})
+"
+        );
         Ok(content)
     }
 }

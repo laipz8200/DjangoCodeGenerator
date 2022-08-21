@@ -1,11 +1,15 @@
 /// DRF ViewSet Generator.
-pub struct Generator;
+pub struct Generator<'a> {
+    methods: Vec<&'a str>,
+}
 use crate::utils::convert_name;
 
-impl Generator {
+impl<'a> Generator<'a> {
     /// New DRF ViewSet Generator.
-    pub fn new() -> Generator {
-        Generator
+    pub fn new() -> Generator<'a> {
+        Generator {
+            methods: vec!["list", "retrieve", "update", "destroy"],
+        }
     }
     /// Generate DRF Model ViewSet Code.
     ///
@@ -27,64 +31,49 @@ impl Generator {
     ///     serializer_class = UserModelSerializer
     ///
     ///     def list(self, request, *args, **kwargs):
-    ///         \"\"\"list user
+    ///         \"\"\"User list
     ///         \"\"\"
     ///         return super().list(request, *args, **kwargs)
     ///
     ///     def retrieve(self, request, *args, **kwargs):
-    ///         \"\"\"retrieve user
+    ///         \"\"\"User retrieve
     ///         \"\"\"
     ///         return super().retrieve(request, *args, **kwargs)
     ///
     ///     def update(self, request, *args, **kwargs):
-    ///         \"\"\"update user
+    ///         \"\"\"User update
     ///         \"\"\"
     ///         return super().update(request, *args, **kwargs)
     ///
     ///     def destroy(self, request, *args, **kwargs):
-    ///         \"\"\"destroy user
+    ///         \"\"\"User destroy
     ///         \"\"\"
     ///         return super().destroy(request, *args, **kwargs)
-    ///
     /// ")));
     /// ```
     pub fn generate_model_viewset_code(&self, name: &str) -> Result<String, String> {
-        let mut content = String::new();
-        // class name
-        content.push_str(
-            format!(
-                "\nclass {}ModelViewSet(viewsets.ModelViewSet):\n",
-                convert_name(name)?
-            )
-            .as_str(),
+        let name = convert_name(name)?;
+        let mut content = format!(
+            "
+class {name}ModelViewSet(viewsets.ModelViewSet):
+    \"\"\"{name} model viewset
+
+    auto generated code.
+    \"\"\"
+    queryset = {name}.objects.all()
+    serializer_class = {name}ModelSerializer
+"
         );
-        content.push_str(format!("    \"\"\"{} model viewset\n\n", convert_name(name)?).as_str());
-        content.push_str("    auto generated code.\n");
-        content.push_str("    \"\"\"\n");
-        // class variables
-        content
-            .push_str(format!("    queryset = {}.objects.all()\n", convert_name(name)?).as_str());
-        content.push_str(
-            format!(
-                "    serializer_class = {}ModelSerializer\n\n",
-                convert_name(name)?
+        for method in self.methods.iter() {
+            content += format!(
+                "
+    def {method}(self, request, *args, **kwargs):
+        \"\"\"{name} {method}
+        \"\"\"
+        return super().{method}(request, *args, **kwargs)
+"
             )
-            .as_str(),
-        );
-        // methods
-        for method in vec!["list", "retrieve", "update", "destroy"] {
-            content.push_str(
-                format!("    def {}(self, request, *args, **kwargs):\n", method).as_str(),
-            );
-            content.push_str(format!("        \"\"\"{} {}\n", method, name).as_str());
-            content.push_str("        \"\"\"\n");
-            content.push_str(
-                format!(
-                    "        return super().{}(request, *args, **kwargs)\n\n",
-                    method
-                )
-                .as_str(),
-            );
+            .as_str();
         }
         Ok(content)
     }

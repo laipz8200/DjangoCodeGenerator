@@ -38,37 +38,30 @@ impl<'a> Generator<'a> {
     ///     updated_at = models.DateTimeField(editable=False, auto_add_now=True)
     ///     name = models.CharField(max_length=200)
     ///     is_active = models.BooleanField()
-    ///
     /// ")));
     /// ```
     pub fn generate_model_code(&self, name: &str, fields: &Vec<String>) -> Result<String, String> {
-        let mut content = String::new();
-        // class name
-        content.push_str("\nclass ");
-        content.push_str(&convert_name(name)?);
-        content.push_str("(models.Model):\n");
-        content.push_str("    \"\"\"");
-        content.push_str(&convert_name(name)?);
-        content.push_str(" model\n\n");
-        content.push_str("    auto generated code.\n");
-        content.push_str("    \"\"\"\n");
-        // fields
-        content.push_str("    id = models.AutoField(primary_key=True)\n");
-        content.push_str("    created_at = models.DateTimeField(editable=False, auto_add=True)\n");
-        content
-            .push_str("    updated_at = models.DateTimeField(editable=False, auto_add_now=True)\n");
-        for value in fields.iter() {
-            if let Ok((fieldname, fieldtype)) = parse_field(value) {
+        let name = convert_name(name)?;
+        let mut content = format!(
+            "
+class {name}(models.Model):
+    \"\"\"{name} model
+
+    auto generated code.
+    \"\"\"
+    id = models.AutoField(primary_key=True)
+    created_at = models.DateTimeField(editable=False, auto_add=True)
+    updated_at = models.DateTimeField(editable=False, auto_add_now=True)
+"
+        )
+        .to_owned();
+        for field in fields.iter() {
+            if let Ok((fieldname, fieldtype)) = parse_field(field) {
                 if let Some(code) = self.code_map.get(&fieldtype) {
-                    content.push_str("    ");
-                    content.push_str(fieldname);
-                    content.push_str(" = ");
-                    content.push_str(code);
-                    content.push_str("\n");
+                    content += format!("    {fieldname} = {code}\n").as_str();
                 }
             };
         }
-        content.push_str("\n");
-        Ok(content)
+        Ok(String::from(content))
     }
 }
