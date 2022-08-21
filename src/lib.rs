@@ -3,20 +3,22 @@ pub mod serializer;
 mod utils;
 pub mod viewset;
 
-use crate::model::generate_model_code;
-use crate::serializer::{generate_model_serializer_code, generate_serializer_code};
 use clap::{Parser, ValueEnum};
 
 /// Run Django Code Generator
 pub fn run_generator() -> Result<String, String> {
     let args = Args::parse();
     match args.component {
-        Component::Model => generate_model_code(&args.name, &args.fields),
+        Component::Model => {
+            let generator = model::Generator::new();
+            generator.generate_model_code(&args.name, &args.fields)
+        }
         Component::Serializer => {
+            let generator = serializer::Generator::new();
             if args.model {
-                generate_model_serializer_code(&args.name, &args.fields)
+                generator.generate_model_serializer_code(&args.name, &args.fields)
             } else {
-                generate_serializer_code(&args.name, &args.fields)
+                generator.generate_serializer_code(&args.name, &args.fields)
             }
         }
     }
