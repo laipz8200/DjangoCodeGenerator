@@ -1,6 +1,30 @@
 use crate::utils::parse_field;
 
 /// Generate django model code.
+///
+/// # Example
+///
+/// ```rust
+/// use django_code_generator::model::generate_model_code;
+///
+/// let name = "User";
+/// let fields = vec![String::from("name:string"), String::from("is_active:bool")];
+/// let code = generate_model_code(name, &fields);
+///
+/// assert_eq!(code, String::from("
+/// class User(models.Model):
+///     \"\"\"User model
+///
+///     auto generated code.
+///     \"\"\"
+///     id = models.AutoField(primary_key=True)
+///     created_at = models.DateTimeField(editable=False, auto_add=True)
+///     updated_at = models.DateTimeField(editable=False, auto_add_now=True)
+///     name = models.CharField(max_length=200)
+///     is_active = models.BooleanField()
+///
+/// "))
+/// ```
 pub fn generate_model_code(name: &str, fields: &Vec<String>) -> String {
     let mut content = String::new();
     // class name
