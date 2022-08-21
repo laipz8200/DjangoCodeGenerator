@@ -10,7 +10,7 @@ use crate::utils::parse_field;
 /// let name = "User";
 /// let fields = vec![String::from("name:string"), String::from("is_active:bool")];
 /// let code = generate_serializer_code(name, &fields);
-/// assert_eq!(code, String::from("
+/// assert_eq!(code, Ok(String::from("
 /// class UserSerializer(serializers.Serializer):
 ///     \"\"\"User serializer
 ///
@@ -19,9 +19,9 @@ use crate::utils::parse_field;
 ///     name = serializers.CharField()
 ///     is_active = serializers.BooleanField()
 ///
-/// "))
+/// ")))
 /// ```
-pub fn generate_serializer_code(name: &str, fields: &Vec<String>) -> String {
+pub fn generate_serializer_code(name: &str, fields: &Vec<String>) -> Result<String, String> {
     let mut content = String::new();
     // class name
     content.push_str("\nclass ");
@@ -43,7 +43,7 @@ pub fn generate_serializer_code(name: &str, fields: &Vec<String>) -> String {
         };
     }
     content.push_str("\n");
-    content
+    Ok(content)
 }
 
 fn generate_field_code(fieldtype: &str) -> &str {

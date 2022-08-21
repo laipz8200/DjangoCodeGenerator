@@ -1,6 +1,6 @@
 use crate::utils::parse_field;
 
-/// Generate django model code.
+/// Generate Django model code.
 ///
 /// # Example
 ///
@@ -10,8 +10,7 @@ use crate::utils::parse_field;
 /// let name = "User";
 /// let fields = vec![String::from("name:string"), String::from("is_active:bool")];
 /// let code = generate_model_code(name, &fields);
-///
-/// assert_eq!(code, String::from("
+/// assert_eq!(code, Ok(String::from("
 /// class User(models.Model):
 ///     \"\"\"User model
 ///
@@ -23,9 +22,9 @@ use crate::utils::parse_field;
 ///     name = models.CharField(max_length=200)
 ///     is_active = models.BooleanField()
 ///
-/// "))
+/// ")))
 /// ```
-pub fn generate_model_code(name: &str, fields: &Vec<String>) -> String {
+pub fn generate_model_code(name: &str, fields: &Vec<String>) -> Result<String, String> {
     let mut content = String::new();
     // class name
     content.push_str("\nclass ");
@@ -50,7 +49,7 @@ pub fn generate_model_code(name: &str, fields: &Vec<String>) -> String {
         };
     }
     content.push_str("\n");
-    content
+    Ok(content)
 }
 
 fn generate_field_code(fieldtype: &str) -> &str {

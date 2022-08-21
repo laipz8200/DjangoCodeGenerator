@@ -19,7 +19,7 @@ enum Component {
     Serializer,
 }
 
-fn run_generator() -> String {
+fn run_generator() -> Result<String, String> {
     let args = Args::parse();
     match args.component {
         Component::Model => generate_model_code(&args.name, &args.fields),
@@ -28,6 +28,9 @@ fn run_generator() -> String {
 }
 
 fn main() {
-    let code = run_generator();
-    print!("{}", code);
+    let res = run_generator();
+    match res {
+        Ok(code) => println!("{}", code),
+        Err(err) => println!("failed with {}", err),
+    }
 }
