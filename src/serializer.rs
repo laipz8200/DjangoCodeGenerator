@@ -46,6 +46,57 @@ pub fn generate_serializer_code(name: &str, fields: &Vec<String>) -> Result<Stri
     Ok(content)
 }
 
+/// Generate DRF ModelSerializer code.
+///
+/// # Example
+///
+/// ```rust
+/// use django_code_generator::serializer::generate_model_serializer_code;
+///
+/// let name = "User";
+/// let fields = vec![String::from("name:string"), String::from("is_active:bool")];
+/// let code = generate_model_serializer_code(name, &fields);
+/// assert_eq!(code, Ok(String::from("
+/// class UserModelSerializer(serializers.ModelSerializer):
+///     \"\"\"User model serializer
+///
+///     auto generated code.
+///     \"\"\"
+///     class Meta:
+///         model = User
+///         fields = ('name', 'is_active', 'id', 'created_at', 'updated_at',)
+///
+/// ")))
+/// ```
+pub fn generate_model_serializer_code(name: &str, fields: &Vec<String>) -> Result<String, String> {
+    let mut content = String::new();
+    // class name
+    content.push_str("\nclass ");
+    content.push_str(name);
+    content.push_str("ModelSerializer(serializers.ModelSerializer):\n");
+    content.push_str("    \"\"\"");
+    content.push_str(name);
+    content.push_str(" model serializer\n\n");
+    content.push_str("    auto generated code.\n");
+    content.push_str("    \"\"\"\n");
+    content.push_str("    class Meta:\n");
+    content.push_str("        model = ");
+    content.push_str(name);
+    content.push_str("\n");
+    content.push_str("        fields = (");
+    // fields
+    for value in fields.iter() {
+        if let Ok((fieldname, _)) = parse_field(value) {
+            content.push_str("'");
+            content.push_str(fieldname);
+            content.push_str("', ");
+        };
+    }
+    content.push_str("'id', 'created_at', 'updated_at',)\n");
+    content.push_str("\n");
+    Ok(content)
+}
+
 fn generate_field_code(fieldtype: &str) -> &str {
     match fieldtype {
         "int" => "serializers.IntegerField()",
