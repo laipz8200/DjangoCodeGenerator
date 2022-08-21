@@ -53,7 +53,7 @@ pub fn generate_serializer_code(name: &str, fields: &Vec<String>) -> Result<Stri
 /// ```rust
 /// use django_code_generator::serializer::generate_model_serializer_code;
 ///
-/// let name = "normal-user";
+/// let name = "normal_user";
 /// let fields = vec![String::from("name:string"), String::from("is_active:bool")];
 /// let code = generate_model_serializer_code(name, &fields);
 /// assert_eq!(code, Ok(String::from("

@@ -17,21 +17,21 @@ pub fn parse_field(field: &str) -> Result<(&str, &str), String> {
 pub fn convert_name(name: &str) -> Result<String, String> {
     let mut new_name = String::new();
     let mut flag = true;
-    let re = Regex::new(r"[0-9a-zA-Z]").unwrap();
-    if !Regex::new(r"[a-zA-Z]").unwrap().is_match(&name[..1]) {
+    let re = Regex::new(r"^[a-zA-Z_][a-zA-Z_0-9]*$").unwrap();
+    if !re.is_match(name) {
         return Err(format!("{}: {}", INVALID_NAME, name));
     }
     for c in name.chars() {
-        if flag {
-            new_name.push_str(c.to_uppercase().to_string().as_str());
-            flag = false;
-            continue;
-        }
         match c {
-            '-' => flag = true,
             '_' => flag = true,
-            c if re.is_match(&c.to_string()) => new_name.push(c),
-            _ => return Err(format!("{}: {}", INVALID_NAME, name)),
+            c => {
+                if flag {
+                    new_name.push_str(c.to_uppercase().to_string().as_str());
+                    flag = false;
+                } else {
+                    new_name.push(c)
+                }
+            }
         }
     }
     Ok(new_name)
@@ -74,8 +74,12 @@ mod tests {
                 want: "UserName",
             },
             TestCase {
-                name: "user-group",
-                want: "UserGroup",
+                name: "nCoV2019",
+                want: "NCoV2019",
+            },
+            TestCase {
+                name: "__user",
+                want: "User",
             },
             TestCase {
                 name: "user_group",
