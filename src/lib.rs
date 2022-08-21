@@ -21,6 +21,15 @@ pub fn run_generator() -> Result<String, String> {
                 generator.generate_serializer_code(&args.name, &args.fields)
             }
         }
+        Component::Viewset => {
+            let generator = viewset::Generator::new();
+            if args.model {
+                generator.generate_model_viewset_code(&args.name)
+            } else {
+                generator.generate_model_viewset_code(&args.name)
+                // generator.generate_serializer_code(&args.name, &args.fields)
+            }
+        }
     }
 }
 
@@ -41,4 +50,5 @@ struct Args {
 enum Component {
     Model,
     Serializer,
+    Viewset,
 }

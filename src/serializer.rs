@@ -16,7 +16,6 @@ impl<'a> Generator<'a> {
         code_map.insert("json", "serializers.JSONField()");
         Generator { code_map }
     }
-
     /// Generate DRF Serializer code.
     ///
     /// # Example
@@ -37,7 +36,7 @@ impl<'a> Generator<'a> {
     ///     name = serializers.CharField()
     ///     is_active = serializers.BooleanField()
     ///
-    /// ")))
+    /// ")));
     /// ```
     pub fn generate_serializer_code(
         &self,
@@ -69,7 +68,6 @@ impl<'a> Generator<'a> {
         content.push_str("\n");
         Ok(content)
     }
-
     /// Generate DRF ModelSerializer code.
     ///
     /// # Example
@@ -92,7 +90,7 @@ impl<'a> Generator<'a> {
     ///         model = NormalUser
     ///         fields = ('name', 'is_active', 'id', 'created_at', 'updated_at',)
     ///
-    /// ")))
+    /// ")));
     /// ```
     pub fn generate_model_serializer_code(
         &self,

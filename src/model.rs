@@ -16,7 +16,6 @@ impl<'a> Generator<'a> {
         code_map.insert("json", "models.JSONField()");
         Generator { code_map }
     }
-
     /// Generate Django model code.
     ///
     /// # Example
@@ -40,7 +39,7 @@ impl<'a> Generator<'a> {
     ///     name = models.CharField(max_length=200)
     ///     is_active = models.BooleanField()
     ///
-    /// ")))
+    /// ")));
     /// ```
     pub fn generate_model_code(&self, name: &str, fields: &Vec<String>) -> Result<String, String> {
         let mut content = String::new();
