@@ -32,9 +32,45 @@ pub fn generate_model_code(name: &str, fields: &Vec<String>) -> String {
 fn generate_field_code(fieldtype: &str) -> &str {
     match fieldtype {
         "int" => "models.IntegerField()",
-        "bool" => "models.BoolField()",
+        "bool" => "models.BooleanField()",
         "string" => "models.CharField(max_length=200)",
         "json" => "models.JSONField()",
         fieldtype => panic!("not support field type: {}", fieldtype),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_generate_field_code() {
+        struct TestCase<'a> {
+            fieldtype: &'a str,
+            want: &'a str,
+        }
+
+        let cases = vec![
+            TestCase {
+                fieldtype: "string",
+                want: "models.CharField(max_length=200)",
+            },
+            TestCase {
+                fieldtype: "int",
+                want: "models.IntegerField()",
+            },
+            TestCase {
+                fieldtype: "json",
+                want: "models.JSONField()",
+            },
+            TestCase {
+                fieldtype: "bool",
+                want: "models.BooleanField()",
+            },
+        ];
+
+        for tt in cases {
+            assert_eq!(tt.want, generate_field_code(tt.fieldtype))
+        }
     }
 }

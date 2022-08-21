@@ -56,7 +56,7 @@ fn generate_field_code(fieldtype: &str) -> &str {
     }
 }
 
-#[cfg(tests)]
+#[cfg(test)]
 mod tests {
     use super::*;
 
@@ -70,19 +70,19 @@ mod tests {
         let cases = vec![
             TestCase {
                 fieldtype: "string",
-                want: "serializers.CharField",
+                want: "serializers.CharField()",
             },
             TestCase {
                 fieldtype: "int",
-                want: "serializers.IntegerField",
+                want: "serializers.IntegerField()",
             },
             TestCase {
                 fieldtype: "json",
-                want: "serializers.JSONField",
+                want: "serializers.JSONField()",
             },
             TestCase {
                 fieldtype: "bool",
-                want: "serializers.BooleanField",
+                want: "serializers.BooleanField()",
             },
         ];
 
