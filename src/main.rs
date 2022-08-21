@@ -4,6 +4,6 @@ fn main() {
     let res = run_generator();
     match res {
         Ok(code) => println!("{}", code),
-        Err(err) => println!("failed with {}", err),
+        Err(err) => println!("failed with :{}", err),
     }
 }
