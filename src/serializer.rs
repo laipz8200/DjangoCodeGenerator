@@ -1,4 +1,4 @@
-use crate::utils::parse_field;
+use crate::utils::{convert_name, parse_field};
 
 /// Generate DRF Serializer code.
 ///
@@ -7,7 +7,7 @@ use crate::utils::parse_field;
 /// ```rust
 /// use django_code_generator::serializer::generate_serializer_code;
 ///
-/// let name = "User";
+/// let name = "user";
 /// let fields = vec![String::from("name:string"), String::from("is_active:bool")];
 /// let code = generate_serializer_code(name, &fields);
 /// assert_eq!(code, Ok(String::from("
@@ -25,10 +25,10 @@ pub fn generate_serializer_code(name: &str, fields: &Vec<String>) -> Result<Stri
     let mut content = String::new();
     // class name
     content.push_str("\nclass ");
-    content.push_str(name);
+    content.push_str(&convert_name(name));
     content.push_str("Serializer(serializers.Serializer):\n");
     content.push_str("    \"\"\"");
-    content.push_str(name);
+    content.push_str(&convert_name(name));
     content.push_str(" serializer\n\n");
     content.push_str("    auto generated code.\n");
     content.push_str("    \"\"\"\n");
@@ -53,17 +53,17 @@ pub fn generate_serializer_code(name: &str, fields: &Vec<String>) -> Result<Stri
 /// ```rust
 /// use django_code_generator::serializer::generate_model_serializer_code;
 ///
-/// let name = "User";
+/// let name = "normal-user";
 /// let fields = vec![String::from("name:string"), String::from("is_active:bool")];
 /// let code = generate_model_serializer_code(name, &fields);
 /// assert_eq!(code, Ok(String::from("
-/// class UserModelSerializer(serializers.ModelSerializer):
-///     \"\"\"User model serializer
+/// class NormalUserModelSerializer(serializers.ModelSerializer):
+///     \"\"\"NormalUser model serializer
 ///
 ///     auto generated code.
 ///     \"\"\"
 ///     class Meta:
-///         model = User
+///         model = NormalUser
 ///         fields = ('name', 'is_active', 'id', 'created_at', 'updated_at',)
 ///
 /// ")))
@@ -72,16 +72,16 @@ pub fn generate_model_serializer_code(name: &str, fields: &Vec<String>) -> Resul
     let mut content = String::new();
     // class name
     content.push_str("\nclass ");
-    content.push_str(name);
+    content.push_str(&convert_name(name));
     content.push_str("ModelSerializer(serializers.ModelSerializer):\n");
     content.push_str("    \"\"\"");
-    content.push_str(name);
+    content.push_str(&convert_name(name));
     content.push_str(" model serializer\n\n");
     content.push_str("    auto generated code.\n");
     content.push_str("    \"\"\"\n");
     content.push_str("    class Meta:\n");
     content.push_str("        model = ");
-    content.push_str(name);
+    content.push_str(&convert_name(name));
     content.push_str("\n");
     content.push_str("        fields = (");
     // fields

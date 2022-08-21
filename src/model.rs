@@ -1,4 +1,4 @@
-use crate::utils::parse_field;
+use crate::utils::{convert_name, parse_field};
 
 /// Generate Django model code.
 ///
@@ -7,7 +7,7 @@ use crate::utils::parse_field;
 /// ```rust
 /// use django_code_generator::model::generate_model_code;
 ///
-/// let name = "User";
+/// let name = "user";
 /// let fields = vec![String::from("name:string"), String::from("is_active:bool")];
 /// let code = generate_model_code(name, &fields);
 /// assert_eq!(code, Ok(String::from("
@@ -28,10 +28,10 @@ pub fn generate_model_code(name: &str, fields: &Vec<String>) -> Result<String, S
     let mut content = String::new();
     // class name
     content.push_str("\nclass ");
-    content.push_str(name);
+    content.push_str(&convert_name(name));
     content.push_str("(models.Model):\n");
     content.push_str("    \"\"\"");
-    content.push_str(name);
+    content.push_str(&convert_name(name));
     content.push_str(" model\n\n");
     content.push_str("    auto generated code.\n");
     content.push_str("    \"\"\"\n");
