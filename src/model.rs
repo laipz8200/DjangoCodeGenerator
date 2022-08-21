@@ -28,10 +28,10 @@ pub fn generate_model_code(name: &str, fields: &Vec<String>) -> Result<String, S
     let mut content = String::new();
     // class name
     content.push_str("\nclass ");
-    content.push_str(&convert_name(name));
+    content.push_str(&convert_name(name)?);
     content.push_str("(models.Model):\n");
     content.push_str("    \"\"\"");
-    content.push_str(&convert_name(name));
+    content.push_str(&convert_name(name)?);
     content.push_str(" model\n\n");
     content.push_str("    auto generated code.\n");
     content.push_str("    \"\"\"\n");

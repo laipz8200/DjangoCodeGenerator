@@ -1,17 +1,26 @@
+use regex::Regex;
+
+const INVALID_FIELD: &str = "invalid field name";
+const INVALID_NAME: &str = "invalid name";
+
 /// Returns field name and type.
 pub fn parse_field(field: &str) -> Result<(&str, &str), String> {
     let v: Vec<&str> = field.split(":").collect();
     if v.len() == 2 {
         Ok((v[0], v[1]))
     } else {
-        Err(format!("{}: {}", ERROR_MESSAGE, field))
+        Err(format!("{}: {}", INVALID_FIELD, field))
     }
 }
 
 /// Convert name to UpperCamelCase.
-pub fn convert_name(name: &str) -> String {
+pub fn convert_name(name: &str) -> Result<String, String> {
     let mut new_name = String::new();
     let mut flag = true;
+    let re = Regex::new(r"[0-9a-zA-Z]").unwrap();
+    if !Regex::new(r"[a-zA-Z]").unwrap().is_match(&name[..1]) {
+        return Err(format!("{}: {}", INVALID_NAME, name));
+    }
     for c in name.chars() {
         if flag {
             new_name.push_str(c.to_uppercase().to_string().as_str());
@@ -21,17 +30,28 @@ pub fn convert_name(name: &str) -> String {
         match c {
             '-' => flag = true,
             '_' => flag = true,
-            c => new_name.push(c),
+            c if re.is_match(&c.to_string()) => new_name.push(c),
+            _ => return Err(format!("{}: {}", INVALID_NAME, name)),
         }
     }
-    new_name
+    Ok(new_name)
 }
-
-const ERROR_MESSAGE: &str = "Field format does not match";
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_convert_name_failed() {
+        let cases = vec!["0a", "shd$"];
+
+        for name in cases {
+            assert_eq!(
+                Err(format!("{}: {}", INVALID_NAME, name)),
+                convert_name(name)
+            );
+        }
+    }
 
     #[test]
     fn test_convert_name() {
@@ -64,7 +84,19 @@ mod tests {
         ];
 
         for tt in cases {
-            assert_eq!(tt.want, convert_name(tt.name).as_str());
+            assert_eq!(Ok(String::from(tt.want)), convert_name(tt.name));
+        }
+    }
+
+    #[test]
+    fn test_parse_field_failed() {
+        let cases = vec!["id", "id:string:other"];
+
+        for field in cases {
+            assert_eq!(
+                Err(format!("{}: {}", INVALID_FIELD, field)),
+                parse_field(field)
+            );
         }
     }
 
@@ -73,38 +105,22 @@ mod tests {
         struct TestCase<'a> {
             field: &'a str,
             want: (&'a str, &'a str),
-            error_message: String,
         }
 
         let cases = vec![
             TestCase {
                 field: "name:string",
                 want: ("name", "string"),
-                error_message: String::new(),
             },
             TestCase {
                 field: "id:int",
                 want: ("id", "int"),
-                error_message: String::new(),
-            },
-            TestCase {
-                field: "id",
-                want: ("", ""),
-                error_message: format!("{}: {}", ERROR_MESSAGE, "id"),
-            },
-            TestCase {
-                field: "id:string:other",
-                want: ("", ""),
-                error_message: format!("{}: {}", ERROR_MESSAGE, "id:string:other"),
             },
         ];
 
         for tt in cases {
             let got = parse_field(tt.field);
-            match got {
-                Ok(got) => assert_eq!(tt.want, got),
-                Err(e) => assert_eq!(tt.error_message, e),
-            }
+            assert_eq!(Ok(tt.want), got);
         }
     }
 }

@@ -25,10 +25,10 @@ pub fn generate_serializer_code(name: &str, fields: &Vec<String>) -> Result<Stri
     let mut content = String::new();
     // class name
     content.push_str("\nclass ");
-    content.push_str(&convert_name(name));
+    content.push_str(&convert_name(name)?);
     content.push_str("Serializer(serializers.Serializer):\n");
     content.push_str("    \"\"\"");
-    content.push_str(&convert_name(name));
+    content.push_str(&convert_name(name)?);
     content.push_str(" serializer\n\n");
     content.push_str("    auto generated code.\n");
     content.push_str("    \"\"\"\n");
@@ -72,16 +72,16 @@ pub fn generate_model_serializer_code(name: &str, fields: &Vec<String>) -> Resul
     let mut content = String::new();
     // class name
     content.push_str("\nclass ");
-    content.push_str(&convert_name(name));
+    content.push_str(&convert_name(name)?);
     content.push_str("ModelSerializer(serializers.ModelSerializer):\n");
     content.push_str("    \"\"\"");
-    content.push_str(&convert_name(name));
+    content.push_str(&convert_name(name)?);
     content.push_str(" model serializer\n\n");
     content.push_str("    auto generated code.\n");
     content.push_str("    \"\"\"\n");
     content.push_str("    class Meta:\n");
     content.push_str("        model = ");
-    content.push_str(&convert_name(name));
+    content.push_str(&convert_name(name)?);
     content.push_str("\n");
     content.push_str("        fields = (");
     // fields
