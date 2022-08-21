@@ -15,20 +15,16 @@ pub fn run_generator() -> Result<String, String> {
         }
         Component::Serializer => {
             let generator = serializer::Generator::new();
-            if args.model {
-                generator.generate_model_serializer_code(&args.name, &args.fields)
-            } else {
-                generator.generate_serializer_code(&args.name, &args.fields)
-            }
+            generator.generate_serializer_code(&args.name, &args.fields)
         }
-        Component::Viewset => {
+        Component::ModelSerializer => {
+            let generator = serializer::Generator::new();
+            generator.generate_model_serializer_code(&args.name, &args.fields)
+        }
+        Component::Viewset => Err(String::from("not support yet")),
+        Component::ModelViewset => {
             let generator = viewset::Generator::new();
-            if args.model {
-                generator.generate_model_viewset_code(&args.name)
-            } else {
-                generator.generate_model_viewset_code(&args.name)
-                // generator.generate_serializer_code(&args.name, &args.fields)
-            }
+            generator.generate_model_viewset_code(&args.name)
         }
     }
 }
@@ -42,13 +38,13 @@ struct Args {
     name: String,
     #[clap(value_parser)]
     fields: Vec<String>,
-    #[clap(long, action)]
-    model: bool,
 }
 
 #[derive(Clone, ValueEnum)]
 enum Component {
     Model,
     Serializer,
+    ModelSerializer,
     Viewset,
+    ModelViewset,
 }
