@@ -6,12 +6,12 @@ use clap::{Parser, ValueEnum};
 use model::{DjangoModel, Model};
 
 /// Run Django Code Generator
-pub fn run_generator() -> Result<String, String> {
+pub fn run_generator() -> String {
     let args = Args::parse();
     match args.component {
         Component::Model => {
             let model = DjangoModel::new(args.name, args.fields);
-            Ok(model.code())
+            model.code()
         }
     }
 }
