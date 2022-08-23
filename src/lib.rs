@@ -1,5 +1,6 @@
 mod fields;
 mod model;
+mod model_serializer;
 mod model_viewset;
 mod utils;
 
@@ -16,6 +17,10 @@ pub fn run_generator() -> String {
         Component::ModelViewset => {
             let viewset = model_viewset::DRFModelViewSet::new(args.name);
             viewset.code()
+        }
+        Component::ModelSerializer => {
+            let serializer = model_serializer::DRFModelSerializer::new(args.name);
+            serializer.code()
         }
     }
 }
@@ -35,4 +40,5 @@ struct Args {
 enum Component {
     Model,
     ModelViewset,
+    ModelSerializer,
 }
