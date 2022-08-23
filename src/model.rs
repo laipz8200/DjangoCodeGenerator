@@ -1,10 +1,6 @@
 use crate::fields;
 use crate::utils::upper_camel_case;
 
-pub trait Model {
-    fn code(&self) -> String;
-}
-
 pub struct DjangoModel {
     name: String,
     fields: Vec<Box<dyn fields::Field>>,
@@ -63,10 +59,7 @@ impl DjangoModel {
             fields: typed_fields,
         }
     }
-}
-
-impl Model for DjangoModel {
-    fn code(&self) -> String {
+    pub fn code(&self) -> String {
         let name = upper_camel_case(&self.name);
         let mut code = format!("class {}(models.Model):\n", name).to_owned();
         code.push_str("    id = models.AutoField(primary_key=True, )\n");

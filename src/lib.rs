@@ -1,17 +1,21 @@
 mod fields;
 mod model;
+mod model_viewset;
 mod utils;
 
 use clap::{Parser, ValueEnum};
-use model::{DjangoModel, Model};
 
 /// Run Django Code Generator
 pub fn run_generator() -> String {
     let args = Args::parse();
     match args.component {
         Component::Model => {
-            let model = DjangoModel::new(args.name, args.fields);
+            let model = model::DjangoModel::new(args.name, args.fields);
             model.code()
+        }
+        Component::ModelViewset => {
+            let viewset = model_viewset::DRFModelViewSet::new(args.name);
+            viewset.code()
         }
     }
 }
@@ -30,4 +34,5 @@ struct Args {
 #[derive(Clone, ValueEnum)]
 enum Component {
     Model,
+    ModelViewset,
 }
