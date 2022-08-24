@@ -11,48 +11,8 @@ impl DRFSerializer {
         let mut typed_fields: Vec<Box<dyn fields::Field>> = vec![];
         for field in fields {
             let v: Vec<&str> = field.split(':').collect();
-            let name = String::from(v[0]);
-            match v[1] {
-                "int" => {
-                    let mut field = fields::IntegerField::new(name);
-                    if v.len() == 3 {
-                        if v[2] == "index" {
-                            field.set_index();
-                        } else {
-                            field.set_unique();
-                        }
-                    }
-                    typed_fields.push(Box::new(field));
-                }
-                "string" => {
-                    let mut field = fields::CharField::new(name);
-                    if v.len() == 3 {
-                        if v[2] == "index" {
-                            field.set_index();
-                        } else {
-                            field.set_unique();
-                        }
-                    }
-                    typed_fields.push(Box::new(field));
-                }
-                "references" => {
-                    let reference = String::from(v[2]);
-                    let field = fields::ForeignKey::new(name, reference);
-                    typed_fields.push(Box::new(field));
-                }
-                "bool" => {
-                    let mut field = fields::BooleanField::new(name);
-                    if v.len() == 3 {
-                        if v[2] == "true" {
-                            field.set_default(true);
-                        } else if v[2] == "false" {
-                            field.set_default(false);
-                        }
-                    }
-                    typed_fields.push(Box::new(field));
-                }
-                t => panic!("unsupported field type: {}", t),
-            }
+            let field = fields::match_field(v);
+            typed_fields.push(field);
         }
         DRFSerializer {
             name,
