@@ -43,6 +43,7 @@ mod tests {
             String::from("leader:references:user"),
             String::from("card_id:string:unique"),
             String::from("can_swim:bool:false"),
+            String::from("bio:text"),
         ];
         let serializer = DRFSerializer::new(String::from("person"), fields);
         let want = String::from(
@@ -52,6 +53,7 @@ mod tests {
     leader = serializers.IntegerField()
     card_id = serializers.CharField()
     can_swim = serializers.BooleanField()
+    bio = serializers.CharField()
 ",
         );
         assert_eq!(want, serializer.code());

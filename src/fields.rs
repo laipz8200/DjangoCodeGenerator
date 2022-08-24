@@ -2,11 +2,13 @@ mod bool;
 mod char;
 mod foreign;
 mod int;
+mod text;
 
 pub use self::bool::BooleanField;
 pub use self::char::CharField;
 pub use self::foreign::ForeignKey;
 pub use self::int::IntegerField;
+pub use self::text::TextField;
 
 pub trait Field {
     fn model_field_code(&self) -> String;
@@ -29,6 +31,17 @@ pub fn match_field(v: Vec<&str>) -> Box<dyn Field> {
         }
         "string" => {
             let mut field = CharField::new(name);
+            if v.len() == 3 {
+                if v[2] == "index" {
+                    field.set_index();
+                } else {
+                    field.set_unique();
+                }
+            }
+            Box::new(field)
+        }
+        "text" => {
+            let mut field = TextField::new(name);
             if v.len() == 3 {
                 if v[2] == "index" {
                     field.set_index();

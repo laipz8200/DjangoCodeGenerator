@@ -45,6 +45,7 @@ mod tests {
         let fields = vec![
             String::from("name:string:index"),
             String::from("age:int"),
+            String::from("bio:text"),
             String::from("leader:references:user"),
             String::from("card_id:string:unique"),
             String::from("can_swim:bool:false"),
@@ -57,6 +58,7 @@ mod tests {
     updated_at = models.DateTimeField(editable=False, auto_add_now=True, )
     name = models.CharField(max_length=200, index=True, )
     age = models.IntegerField()
+    bio = models.TextField()
     leader = models.ForeignKey(\"User\", on_delete=models.CASCADE, )
     card_id = models.CharField(max_length=200, unique=True, )
     can_swim = models.BooleanField(default=False, )
