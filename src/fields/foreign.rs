@@ -20,6 +20,9 @@ impl Field for ForeignKey {
             self.name, other_model_name
         )
     }
+    fn serializer_field_code(&self) -> String {
+        format!("{} = serializers.IntegerField()", self.name)
+    }
 }
 
 #[cfg(test)]

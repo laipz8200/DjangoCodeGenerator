@@ -29,6 +29,9 @@ impl Field for BooleanField {
         }
         format!("{} = models.BooleanField({})", self.name, params)
     }
+    fn serializer_field_code(&self) -> String {
+        format!("{} = serializers.BooleanField()", self.name)
+    }
 }
 
 #[cfg(test)]

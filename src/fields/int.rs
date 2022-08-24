@@ -28,6 +28,9 @@ impl Field for IntegerField {
         let unique = if self.unique { "unique=True, " } else { "" };
         format!("{} = models.IntegerField({}{})", self.name, index, unique)
     }
+    fn serializer_field_code(&self) -> String {
+        format!("{} = serializers.IntegerField()", self.name)
+    }
 }
 
 #[cfg(test)]

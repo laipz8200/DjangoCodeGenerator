@@ -2,6 +2,7 @@ mod fields;
 mod model;
 mod model_serializer;
 mod model_viewset;
+mod serializer;
 mod utils;
 
 use clap::{Parser, ValueEnum};
@@ -13,6 +14,10 @@ pub fn run_generator() -> String {
         Component::Model => {
             let model = model::DjangoModel::new(args.name, args.fields);
             model.code()
+        }
+        Component::Serializer => {
+            let serializer = serializer::DRFSerializer::new(args.name, args.fields);
+            serializer.code()
         }
         Component::ModelViewset => {
             let viewset = model_viewset::DRFModelViewSet::new(args.name);
@@ -39,6 +44,7 @@ struct Args {
 #[derive(Clone, ValueEnum)]
 enum Component {
     Model,
+    Serializer,
     ModelViewset,
     ModelSerializer,
 }

@@ -10,4 +10,5 @@ pub use self::int::IntegerField;
 
 pub trait Field {
     fn model_field_code(&self) -> String;
+    fn serializer_field_code(&self) -> String;
 }

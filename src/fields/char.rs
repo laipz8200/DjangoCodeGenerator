@@ -31,6 +31,9 @@ impl Field for CharField {
             self.name, index, unique
         )
     }
+    fn serializer_field_code(&self) -> String {
+        format!("{} = serializers.CharField()", self.name)
+    }
 }
 
 #[cfg(test)]
